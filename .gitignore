@@ -1,4 +1,10 @@
 target/
+.gradle/
+.gradle-dist/
+.gradle-user/
+.gradle-9.2.1-bin.zip
+junit-platform-console-standalone-*.jar
+.idea/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
