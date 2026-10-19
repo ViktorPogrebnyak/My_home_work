@@ -21,7 +21,20 @@ tasks.register('testRunOver') {
 }
 
 tasks.named('test') {
-    useJUnitPlatform()
+    useJUnitPlatform {
+        includeTags 'homework', 'assertion'
+    }
+    finalizedBy 'testRunOver'
+}
+
+tasks.register('assertionTests', Test) {
+    description = 'Runs only the assertion examples tagged with assertion.'
+    group = 'verification'
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    useJUnitPlatform {
+        includeTags 'assertion'
+    }
     finalizedBy 'testRunOver'
 }
 

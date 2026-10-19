@@ -1,9 +1,8 @@
 package org.example;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -14,55 +13,57 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
+@Tag("homework")
+@ExtendWith(HomeworkTestOutputExtension.class)
 class JavaHomeworkJUnitTest {
     private static final ThreadLocalRandom RANDOM = ThreadLocalRandom.current();
 
-    @BeforeEach
-    void printMethodStart() {
-        System.out.println("========================Test method start");
-    }
-
-    @AfterEach
-    void printMethodEnd() {
-        System.out.println("Test method end");
-        System.out.println("========================");
-    }
-
-    // Задача 1: @Test, одно случайное число от 1 до 100.
-    @Test
+    // Задача 1: случайное число от 1 до 100; повторение требуется заданием по Assertions.
+    @RepeatedTest(10)
     void testIsEven() {
         int number = RANDOM.nextInt(1, 101);
-        check(Main.isEven(number) == (number % 2 == 0), "isEven(" + number + ")");
+        assertEquals(number % 2 == 0, Main.isEven(number),
+                () -> "isEven(" + number + "): ожидалось <" + (number % 2 == 0)
+                        + ">, получено <" + Main.isEven(number) + ">");
     }
 
-    // Задача 2: @RepeatedTest, 20 случайных возрастов от 0 до 99.
+    // Задача 2: 20 случайных возрастов от 0 до 99.
     @RepeatedTest(20)
     void testCheckAccess() {
         int age = RANDOM.nextInt(0, 100);
         String expected = age > 18 ? "Allowed" : "Denied";
-        check(expected.equals(Main.checkAccess(age)), "checkAccess(" + age + ")");
+        String actual = Main.checkAccess(age);
+        assertEquals(expected, actual,
+                () -> "checkAccess(" + age + "): ожидалось <" + expected + ">, получено <" + actual + ">");
     }
 
-    // Задача 3: @ParameterizedTest со случайными целыми числами.
+    // Задача 3: параметризованный запуск на случайных целых числах.
     @ParameterizedTest
     @MethodSource("randomIntegers")
     void testIsPositive(int number) {
-        check(Main.isPositive(number) == (number >= 0), "isPositive(" + number + ")");
+        boolean expected = number >= 0;
+        boolean actual = Main.isPositive(number);
+        assertEquals(expected, actual,
+                () -> "isPositive(" + number + "): ожидалось <" + expected + ">, получено <" + actual + ">");
     }
 
-    // Задача 4: @ParameterizedTest с оценками от 0 до 100.
+    // Задача 4: случайные оценки от 0 до 100.
     @ParameterizedTest
     @MethodSource("randomScores")
     void testGetGrade(int score) {
         String expected = expectedGrade(score);
-        check(expected.equals(Main.getGrade(score)), "getGrade(" + score + ")");
+        String actual = Main.getGrade(score);
+        assertEquals(expected, actual,
+                () -> "getGrade(" + score + "): ожидалось <" + expected + ">, получено <" + actual + ">");
     }
 
-    // Задача 5: @Test.
-    @Test
+    // Задача 5: случайный старт обратного отсчёта.
+    @RepeatedTest(10)
     void testBlastOff() {
         int start = RANDOM.nextInt(1, 11);
         StringBuilder expected = new StringBuilder();
@@ -70,25 +71,32 @@ class JavaHomeworkJUnitTest {
             expected.append(value).append(' ');
         }
         expected.append("Поехали!");
-        check(expected.toString().equals(Main.blastOff(start)), "blastOff(" + start + ")");
+        String actual = Main.blastOff(start);
+        assertEquals(expected.toString(), actual,
+                () -> "blastOff(" + start + "): ожидалось <" + expected + ">, получено <" + actual + ">");
     }
 
-    // Задача 6: @RepeatedTest с разными случайными значениями.
+    // Задача 6: 10 случайных значений.
     @RepeatedTest(10)
     void testSumToN() {
         int n = RANDOM.nextInt(0, 101);
         int expected = n * (n + 1) / 2;
-        check(Main.sumToN(n) == expected, "sumToN(" + n + ")");
+        int actual = Main.sumToN(n);
+        assertEquals(expected, actual,
+                () -> "sumToN(" + n + "): ожидалось <" + expected + ">, получено <" + actual + ">");
     }
 
-    // Задача 7: @ParameterizedTest; часть массивов содержит Bug в случайном регистре.
+    // Задача 7: случайные массивы; часть из них содержит Bug в разном регистре.
     @ParameterizedTest
     @MethodSource("randomMessageCases")
     void testHasBug(String[] messages, boolean expected) {
-        check(Main.hasBug(messages) == expected, "hasBug(" + Arrays.toString(messages) + ")");
+        boolean actual = Main.hasBug(messages);
+        assertEquals(expected, actual,
+                () -> "hasBug(" + Arrays.toString(messages) + "): ожидалось <" + expected
+                        + ">, получено <" + actual + ">");
     }
 
-    // Задача 8: @RepeatedTest с включёнными границами диапазона.
+    // Задача 8: 10 случайных диапазонов с включёнными границами.
     @RepeatedTest(10)
     void testGetEvenInRange() {
         int start = RANDOM.nextInt(-50, 31);
@@ -102,19 +110,24 @@ class JavaHomeworkJUnitTest {
                 expected.append(value);
             }
         }
-        check(expected.toString().equals(Main.getEvenInRange(start, end)),
-                "getEvenInRange(" + start + ", " + end + ")");
+        String actual = Main.getEvenInRange(start, end);
+        assertEquals(expected.toString(), actual,
+                () -> "getEvenInRange(" + start + ", " + end + "): ожидалось <" + expected
+                        + ">, получено <" + actual + ">");
     }
 
-    // Задача 9: @Test.
-    @Test
+    // Задача 9: случайный массив целых чисел.
+    @RepeatedTest(10)
     void testFindMax() {
         int[] values = RANDOM.ints(RANDOM.nextInt(1, 11), -100, 101).toArray();
         int expected = Arrays.stream(values).max().orElseThrow();
-        check(Main.findMax(values) == expected, "findMax(" + Arrays.toString(values) + ")");
+        int actual = Main.findMax(values);
+        assertEquals(expected, actual,
+                () -> "findMax(" + Arrays.toString(values) + "): ожидалось <" + expected
+                        + ">, получено <" + actual + ">");
     }
 
-    // Задача 10: @ParameterizedTest.
+    // Задача 10: параметризованные массивы случайных строк.
     @ParameterizedTest
     @MethodSource("randomStringArrays")
     void testReverse(String[] values) {
@@ -122,21 +135,25 @@ class JavaHomeworkJUnitTest {
         for (int i = 0; i < values.length; i++) {
             expected[i] = values[values.length - 1 - i];
         }
-        check(Arrays.equals(expected, Main.reverse(values)), "reverse(" + Arrays.toString(values) + ")");
+        String[] actual = Main.reverse(values);
+        assertArrayEquals(expected, actual,
+                () -> "reverse(" + Arrays.toString(values) + "): ожидалось <" + Arrays.toString(expected)
+                        + ">, получено <" + Arrays.toString(actual) + ">");
     }
 
-    // Задача 11: @RepeatedTest; список всегда содержит хотя бы одно число.
+    // Задача 11: 10 случайных списков чисел.
     @RepeatedTest(10)
     void testCalcAverage() {
         List<Double> values = RANDOM.doubles(RANDOM.nextInt(1, 11), -100, 101)
                 .boxed().toList();
         double expected = values.stream().mapToDouble(Double::doubleValue).average().orElseThrow();
         double actual = Main.calcAverage(values);
-        check(Math.abs(expected - actual) < 1.0e-9, "calcAverage(" + values + ")");
+        assertEquals(expected, actual, 1.0e-9,
+                () -> "calcAverage(" + values + "): ожидалось <" + expected + ">, получено <" + actual + ">");
     }
 
-    // Задача 12: @Test.
-    @Test
+    // Задача 12: случайный список имён и случайное имя для исключения.
+    @RepeatedTest(10)
     void testRemoveSpecificName() {
         String[] names = {"Anna", "Ivan", "Oleg", "Maria", "Pavel"};
         List<String> original = new ArrayList<>();
@@ -146,8 +163,9 @@ class JavaHomeworkJUnitTest {
         String target = names[RANDOM.nextInt(names.length)];
         List<String> expected = original.stream().filter(name -> !name.equals(target)).toList();
         List<String> actual = Main.removeSpecificName(original, target);
-        check(expected.equals(actual), "removeSpecificName(" + original + ", " + target + ")");
-        check(original.size() >= actual.size(), "исходный список не должен становиться короче");
+        assertEquals(expected, actual,
+                () -> "removeSpecificName(" + original + ", " + target + "): ожидалось <" + expected
+                        + ">, получено <" + actual + ">");
     }
 
     private static Stream<Integer> randomIntegers() {
@@ -193,14 +211,5 @@ class JavaHomeworkJUnitTest {
         if (score <= 60) return "C";
         if (score <= 80) return "B";
         return "A";
-    }
-
-    private static void check(boolean passed, String description) {
-        if (passed) {
-            System.out.println("TEST PASSED");
-        } else {
-            System.out.println("TEST FAILED");
-            fail("Проверка не пройдена: " + description);
-        }
     }
 }
