@@ -11,6 +11,8 @@ repositories {
 
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:6.0.1'
+    testImplementation 'io.rest-assured:rest-assured:6.2.0'
+    testImplementation 'org.assertj:assertj-core:3.27.7'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
@@ -34,6 +36,17 @@ tasks.register('assertionTests', Test) {
     classpath = sourceSets.test.runtimeClasspath
     useJUnitPlatform {
         includeTags 'assertion'
+    }
+    finalizedBy 'testRunOver'
+}
+
+tasks.register('apiTest', Test) {
+    description = 'Runs only the REST API tests.'
+    group = 'verification'
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    useJUnitPlatform {
+        includeTags 'api'
     }
     finalizedBy 'testRunOver'
 }
