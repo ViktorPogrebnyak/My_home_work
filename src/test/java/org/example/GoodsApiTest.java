@@ -107,7 +107,7 @@ class GoodsApiTest {
 
         request().queryParam("page", 0).queryParam("size", 100)
                 .when().get("/goods/list")
-                .then().statusCode(200).body("$..name", hasItem(name));
+                .then().statusCode(200).body("goods.name", hasItem(name));
     }
 
     @Test
