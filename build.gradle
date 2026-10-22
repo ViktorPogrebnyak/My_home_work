@@ -14,6 +14,8 @@ dependencies {
     testImplementation 'io.rest-assured:rest-assured:6.2.0'
     testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.19.2'
     testImplementation 'org.assertj:assertj-core:3.27.7'
+    testImplementation 'org.seleniumhq.selenium:selenium-java:4.51.0'
+    testImplementation 'com.codeborne:selenide:7.19.0'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
@@ -50,6 +52,36 @@ tasks.register('apiTest', Test) {
         includeTags 'api'
     }
     finalizedBy 'testRunOver'
+}
+
+tasks.register('seleniumTest', Test) {
+    description = 'Runs the UI tests written with Selenium WebDriver.'
+    group = 'verification'
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    useJUnitPlatform {
+        includeTags 'selenium'
+    }
+}
+
+tasks.register('selenideTest', Test) {
+    description = 'Runs the UI tests written with Selenide.'
+    group = 'verification'
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    useJUnitPlatform {
+        includeTags 'selenide', 'webinar'
+    }
+}
+
+tasks.register('uiTest', Test) {
+    description = 'Runs all UI tests written with Selenium and Selenide.'
+    group = 'verification'
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    useJUnitPlatform {
+        includeTags 'ui'
+    }
 }
 
 tasks.withType(JavaCompile).configureEach {
