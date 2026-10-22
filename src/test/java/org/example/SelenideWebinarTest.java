@@ -11,9 +11,11 @@ import java.util.UUID;
 
 import static com.codeborne.selenide.CollectionCondition.size;
 import static com.codeborne.selenide.Condition.enabled;
+import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Condition.value;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 import static com.codeborne.selenide.Selenide.open;
@@ -49,7 +51,13 @@ class SelenideWebinarTest extends UiApiSupport {
         $("#total-price").shouldHave(exactText("240"));
         $("#makeOrder").shouldBe(enabled).click();
         $("#main-title").shouldHave(exactText("Заказ успешно оформлен!"));
-        $(".toast").shouldBe(visible).shouldHave(text("Заказ принят в обработку!"));
+        $$(".toast").findBy(text("Заказ принят в обработку!")).shouldBe(visible);
+
+        Selenide.refresh();
+        $("#cart-count").shouldHave(exactText("0"));
+        $("#open-cart-btn").click();
+        $("#cart-item-" + productId).shouldNot(exist);
+        $("#total-price").shouldHave(exactText("0"));
     }
 
     @Test
@@ -79,8 +87,8 @@ class SelenideWebinarTest extends UiApiSupport {
         $("#add-btn").shouldBe(enabled).click();
 
         $(".toast").shouldBe(visible).shouldHave(text("Товар успешно добавлен"));
-        $("#tbody").shouldHave(text(name));
         trackProductByName(name);
+        $("#tbody input[value='" + name + "']").shouldBe(visible).shouldHave(value(name));
     }
 
     @Test

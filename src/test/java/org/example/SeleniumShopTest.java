@@ -77,8 +77,9 @@ class SeleniumShopTest extends UiApiSupport {
         driver.findElement(By.id("password")).sendKeys("wrong-password");
         driver.findElement(By.cssSelector("button[type='submit']")).click();
 
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".error")));
-        assertTrue(driver.findElement(By.cssSelector(".error")).isDisplayed(),
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector(".alert-danger"),
+                "Неверные учетные данные пользователя"));
+        assertTrue(driver.findElement(By.cssSelector(".alert-danger")).isDisplayed(),
                 "An error message should be shown after an incorrect login");
     }
 

@@ -2,7 +2,6 @@ package org.example;
 
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.Selenide;
-import com.codeborne.selenide.SelenideElement;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -43,11 +42,11 @@ class SelenideShopTest extends UiApiSupport {
         $("#n-name").setValue(name);
         $("#n-price").setValue("45");
         $("#add-btn").shouldBe(enabled).click();
-        $(".toast").shouldBe(visible).shouldHave(text("Товар успешно добавлен"));
+        $(".toast").shouldBe(visible, text("Товар успешно добавлен"));
         trackProductByName(name);
 
         $("a[href='/']").click();
-        $("#products-list .product-card").shouldBe(visible).shouldHave(text(name));
+        $("#products-list").shouldBe(visible, text(name));
     }
 
     @Test
@@ -58,8 +57,8 @@ class SelenideShopTest extends UiApiSupport {
         $("#card-" + productId).shouldBe(visible);
         $("[data-action='add-to-cart'][data-id='" + productId + "']").shouldBe(enabled).click();
         $("#open-cart-btn").click();
-        $("#cart-item-" + productId).shouldBe(visible).shouldHave(text("Selenide cart"));
-        $("#cart-count").shouldHave(exactText("1"));
+        $("#cart-item-" + productId).shouldBe(visible, text("Selenide cart"));
+        $("#cart-count").shouldBe(exactText("1"));
     }
 
     @Test
@@ -69,7 +68,7 @@ class SelenideShopTest extends UiApiSupport {
         $("#password").setValue("wrong-password");
         $("button[type='submit']").shouldBe(enabled).click();
 
-        $(".error").shouldBe(visible);
+        $(".alert-danger").shouldBe(visible, text("Неверные учетные данные пользователя"));
     }
 
     @Test
@@ -84,8 +83,9 @@ class SelenideShopTest extends UiApiSupport {
         Selenide.refresh();
         $("#card-" + productId).shouldBe(visible);
         $("#open-cart-btn").click();
-        $("#cart-count").shouldHave(exactText("1"));
+        $("#cart-count").shouldBe(exactText("1"));
         $("#cart-item-" + productId).shouldBe(visible);
+        $("#total-price").shouldBe(exactText("25"));
     }
 
     @Test
@@ -98,11 +98,11 @@ class SelenideShopTest extends UiApiSupport {
         $("[data-action='add-to-cart'][data-id='" + firstId + "']").click();
         $("[data-action='add-to-cart'][data-id='" + secondId + "']").click();
         $("#open-cart-btn").click();
-        $("#total-price").shouldHave(exactText("330"));
+        $("#total-price").shouldBe(exactText("330"));
         $("#makeOrder").shouldBe(enabled).click();
 
-        // Selenide waits for the JavaScript alert; this fails with a timeout if no alert appears.
-        Selenide.switchTo().alert().accept();
+        // Selenide waits for and accepts the alert; a missing alert fails the test.
+        Selenide.confirm("[SmartShop]: Денег не хватает! Сумма 330 ₽ превышает лимит 300 ₽.");
         $("#cartModal").shouldBe(visible);
         $("#cart-item-" + firstId).shouldBe(visible);
     }
@@ -112,6 +112,6 @@ class SelenideShopTest extends UiApiSupport {
         $("#username").shouldBe(visible).setValue(username);
         $("#password").setValue(password);
         $("button[type='submit']").shouldBe(enabled).click();
-        $("h1").shouldBe(visible).shouldHave(text("SmartShop Admin"));
+        $("h1").shouldBe(visible, text("SmartShop Admin"));
     }
 }
