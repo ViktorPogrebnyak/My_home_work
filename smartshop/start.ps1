@@ -1,6 +1,6 @@
 param(
     [string]$JarPath = "$env:USERPROFILE/Downloads/oa_at_train_project-1.0-SNAPSHOT.jar/oa_at_train_project-1.0-SNAPSHOT.jar",
-    [int]$Port = 8081
+    [int]$Port = 8080
 )
 
 $ErrorActionPreference = 'Stop'
